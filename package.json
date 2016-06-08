@@ -1,7 +1,8 @@
 {
   "name": "sam-solution-daemon-client",
   "version": "1.0.0",
-  "description": "Desktop client daemon for SAM-Solution",
+  "description": "System Administration Manager - Desktop daemon client",
+  "private": true,
   "main": "client.js",
   "scripts": {
     "start": "node client.js",
@@ -17,17 +18,23 @@
     "system",
     "administration",
     "manager",
+    "desktop",
     "daemon",
     "client",
     "node",
     "js",
     "javascript",
     "node.js"
+    "linux",
+    "windows"
   ],
   "author": "SAM-Solution team",
   "license": "LGPL-3.0",
   "bugs": {
     "url": "https://github.com/EIP-SAM/SAM-Solution-Daemon-Client/issues"
   },
-  "homepage": "https://github.com/EIP-SAM/SAM-Solution-Daemon-Client#readme"
+  "homepage": "https://github.com/EIP-SAM/SAM-Solution-Daemon-Client#readme",
+  "jshintConfig": {
+    "esversion": 6
+  }
 }
