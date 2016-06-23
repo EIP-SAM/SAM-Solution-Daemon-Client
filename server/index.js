@@ -5,7 +5,6 @@ module.exports.getDaemonInfo = function (socket) {
   });
 }
 
-
 module.exports.initSocketEvent = function (socket) {
-  
+
 }

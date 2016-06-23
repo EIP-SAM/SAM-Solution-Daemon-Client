@@ -12,6 +12,22 @@
     "type": "git",
     "url": "git+https://github.com/EIP-SAM/SAM-Solution-Daemon-Client.git"
   },
+  "keywords": [
+    "sam",
+    "solution",
+    "system",
+    "administration",
+    "manager",
+    "desktop",
+    "daemon",
+    "client",
+    "node",
+    "js",
+    "javascript",
+    "node.js",
+    "linux",
+    "windows"
+  ],
   "author": "SAM-Solution team",
   "license": "LGPL-3.0",
   "bugs": {
