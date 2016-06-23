@@ -1,0 +1,9 @@
+{
+  "port": 3000,
+  "serverUrl": "http://localhost:8081",
+  "debug": false,
+  "secret": "mySuperCookieSecretKeyIMustUpdate",
+  "userInfo": {
+    "username": "titi"
+  }
+}
