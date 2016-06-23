@@ -1,8 +1,8 @@
-const userInfo = require('../../config/base.config.json').userInfo;
+const getDaemonInfo = require('./getDaemonInfo');
 
 module.exports = (socket) => {
-  socket.on('getDaemonInfo', function(msg){
-    console.log('getDaemonInfo');
-    socket.emit('getDaemonInfo', {message: userInfo});
-  });
+  /*
+    getDaemonInfo : Send user's info
+   */
+   getDaemonInfo(socket);
 }
