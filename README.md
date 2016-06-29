@@ -12,59 +12,11 @@ This project fits into the [Epitech Innovative Projects](http://www.epitech.eu/e
 ### Repository
 *Repository description (in construction)*
 
-## Pre-requisites
-### Hardware requirements
-* Computational or memory client machine hardware capacities are theoretically not involving any problem regarding the execution flow of our solution. However, the more its capacities will be limited, the more slowly the execution flow will be.
-* A computer possessing a common processor architecture, like __x86__, __x86_64__, __ARM__.  
-  *Note: Only __x86_64__ architecture has been tested for now.*
-* Client installation requires an active internet connexion.
-* Server must be reachable via a local network or an internet connexion.
+## Install and run
+See [INSTALLATION.md](/INSTALLATION.md)
 
-### Software requirements
-* A modern and up to date __Linux__ operating system (like Debian/Ubuntu/Fedora/Archlinux/...), or a __Windows__ version `>= 8.1`.  
-  *Note: It is important to note that, for experimental purposes only, in accordance with the actual development status, a modern version of __OS X__, may, for now, be still sufficient to make run the client.*
-* A __node.js__ version `>= 5.4.X`
-* A __npm__ version `>= 1.2.X`
-* __git__ must be available through the command line
-
-## Usage
-### Installation (from source)
-#### Clone this repository
-```
-$ git clone https://github.com/EIP-SAM/SAM-Solution-Daemon-Client.git
-$ cd SAM-Solution-Daemon-Client
-```
-
-#### Select the desired version
-##### Latest release version
-```
-$ git checkout release
-```
-
-##### Latest development version
-```
-$ git checkout develop
-```
-
-#### Install project `npm` dependencies
-```
-$ npm install
-```
-
-#### Configure the client
-##### Copy the default configuration files
-```
-$ for f in config/*config.json.example; do cp "$f" "`echo $f | sed s/json.example/json/`"; done;
-```
-
-##### Configure client base
-*Base client configuration (in construction)*
-
-### Run
-#### Launch the client
-```
-$ npm start
-```
+## Contributing
+See [CONTRIBUTING.md](/CONTRIBUTING.md)
 
 ## API
 ### Daemon module
@@ -72,14 +24,7 @@ $ npm start
 * Prefix : `daemon`
 * Messages :
     * `alive`
-      * 
-
-## Contribution
-### Code
-This project being a school project, we are not yet open to external code contribution.
-
-### Issues
-Suggestions and bugs reporting are always welcome! Don't hesitate to open an issue if you have something to say.
+      *
 
 ## Who do I talk to?
 We are a team of nine [Epitech](https://en.wikipedia.org/wiki/Epitech) students. You can contact us via this address samsolution_2017@labeip.epitech.eu
@@ -97,4 +42,4 @@ We are a team of nine [Epitech](https://en.wikipedia.org/wiki/Epitech) students.
 
 ## License
 GNU Lesser General Public License Version 3 (LGPL-3.0)  
-See full license [here](https://github.com/EIP-SAM/SAM-Solution-Daemon-Client/blob/develop/LICENSE)
+See full license [here](/LICENSE)
