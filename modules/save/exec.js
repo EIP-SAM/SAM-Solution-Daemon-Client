@@ -1,3 +1,8 @@
+let Repository = require('git-cli').Repository
+
+const gitUser = require('../../config/git.config.json').serverGitUser;
+const repoPath = require('../../config/git.config.json').baseDir;
+
 module.exports = (socket) => {
   /*
     exec : exec a save
