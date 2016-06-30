@@ -1,8 +1,8 @@
-const getDaemonInfo = require('./getDaemonInfo');
+const onGetData = require('./getData');
 
 module.exports = (socket) => {
   /*
-    getDaemonInfo : Send user's info
+    getData : Send user's data
    */
-   getDaemonInfo(socket);
+   onGetData(socket);
 }

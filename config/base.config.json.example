@@ -4,6 +4,8 @@
   "debug": false,
   "secret": "mySuperCookieSecretKeyIMustUpdate",
   "userInfo": {
-    "username": "titi"
+    "username": "titi",
+    "firstName": "Brian",
+    "lastName": "Finch"
   }
 }
