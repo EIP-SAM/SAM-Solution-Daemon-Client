@@ -18,14 +18,6 @@ See [INSTALLATION.md](/INSTALLATION.md)
 ## Contributing
 See [CONTRIBUTING.md](/CONTRIBUTING.md)
 
-## API
-### Daemon module
-*(in construction)*
-* Prefix : `daemon`
-* Messages :
-    * `alive`
-      *
-
 ## Who do I talk to?
 We are a team of nine [Epitech](https://en.wikipedia.org/wiki/Epitech) students. You can contact us via this address samsolution_2017@labeip.epitech.eu
 
