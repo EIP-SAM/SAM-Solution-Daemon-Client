@@ -1,10 +1,8 @@
 {
-  "serverUrl": "localhost:8081",
+  "serverUrl": ""http://localhost:8080",
   "debug": false,
   "secret": "mySuperCookieSecretKeyIMustUpdate",
   "userInfo": {
-    "username": "titi",
-    "firstName": "Brian",
-    "lastName": "Finch"
+    "username": "titi"
   }
 }
