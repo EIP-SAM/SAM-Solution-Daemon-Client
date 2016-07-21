@@ -9,8 +9,8 @@ const userInfo = require('./config/base.config.json').userInfo;
 fs.access(getUserHome() + '/.git', fs.F_OK, function(err){
   console.log(err ? 'Repo not init yet, creating it now' : 'Repo already created');
   if (err) {
-    gitService.initRepo(getUserHome());
-    gitService.save(getUserHome());
+    gitService.initRepo(getUserHome()).then(function(msg) {
+    });
   }
 });
 
