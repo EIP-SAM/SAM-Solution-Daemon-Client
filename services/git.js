@@ -5,11 +5,11 @@ const Git = require('../workers/git');
 const debug = require('../config/base.config.json').debug;
 const userInfo = require('../config/base.config.json').userInfo;
 
-const gitConfig = require('../config/git.config.json');
+const config = require('../config/base.config.json');
 
 let getUserRepoUrl = function () {
-  return gitConfig.gitServerUser + '@' + gitConfig.gitServerUrl + ':' + gitConfig.gitServerDir + userInfo.username;
-}
+  return config.serverUrl + config.gitServerRoute + config.userInfo.username + '.git';
+};
 
 let getBranchNameToSave = function () {
   let now = new Date().toISOString().
@@ -17,16 +17,21 @@ let getBranchNameToSave = function () {
     replace(/\..+/, '').
     replace(new RegExp(':', 'g'), '-');
   return '\'' + os.hostname() + '_' + now.split(' ').join('_') + '\'';
-}
+};
 
 module.exports.initRepo = function initRepo(path) {
   return new Promise(function(fullfill, reject) {
     let git = new Git({cwd: path});
     git.exec('init', {}, []).then(function(stdout){
       git.exec('remote', {}, ['add', 'origin', getUserRepoUrl()]).then(function(stdout){
-        git.exec('fetch', {}, []).then(function(stdout){
-          console.log('Init : OK');
-          fullfill('ok');
+        git.exec('commit', {}, ['--allow-empty', '-m', 'initial_commit']).then(function(stdout){
+          git.exec('push', {u: true}, ['origin', 'master']).then(function(stdout){
+            console.log('Init : OK');
+            fullfill('ok');
+          }).catch(function(err) {
+            console.log(err);
+            reject(err);
+          });
         }).catch(function(err) {
           console.log(err);
           reject(err);
@@ -40,7 +45,7 @@ module.exports.initRepo = function initRepo(path) {
       reject(err);
     });
   });
-}
+};
 
 module.exports.save = function save(path, files) {
   return new Promise(function(fullfill, reject) {
@@ -72,7 +77,7 @@ module.exports.save = function save(path, files) {
       reject(err);
     });
   });
-}
+};
 
 module.exports.restore = function restore(path, branchName) {
   return new Promise(function(fullfill, reject) {
@@ -91,4 +96,4 @@ module.exports.restore = function restore(path, branchName) {
       reject(err);
     });
   });
-}
+};
