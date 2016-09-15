@@ -38,6 +38,7 @@
     "esversion": 6
   },
   "dependencies": {
+    "os-reboot": "github:eip-sam/OS-Reboot",
     "socket.io-client": "^1.4.6"
   }
 }
