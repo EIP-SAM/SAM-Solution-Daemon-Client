@@ -56,12 +56,11 @@ module.exports.save = function save(path, files) {
 
     git.exec('checkout', {b: true}, [branchName]).then(function(stdout) {
       git.exec('add', addOptions, addArgs).then(function(stdout) {
-        git.exec('commit', {a: true, m: true}, [branchName]).then(function(stdout) {
+        git.exec('commit', {a: true, m: true}, [branchName, '--allow-empty']).then(function(stdout) {
           git.exec('push', {u: true}, ['origin', branchName]).then(function(stdout) {
             console.log('Save : OK');
             fullfill({files: files, branch: branchName});
           }).catch(function(err) {
-            console.log(err);
             reject(err);
           });
         }).catch(function(err) {
@@ -88,7 +87,6 @@ module.exports.restore = function restore(path, branchName) {
         console.log('restore : OK');
         fullfill({branch: branchName});
       }).catch(function(err) {
-        console.log(err);
         reject(err);
       });
     }).catch(function(err) {
