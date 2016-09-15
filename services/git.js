@@ -25,7 +25,7 @@ module.exports.initRepo = function initRepo(path) {
     git.exec('init', {}, []).then(function(stdout){
       git.exec('remote', {}, ['add', 'origin', getUserRepoUrl()]).then(function(stdout){
         git.exec('commit', {}, ['--allow-empty', '-m', 'initial_commit']).then(function(stdout){
-          git.exec('push', {u: true}, ['origin', 'master']).then(function(stdout){
+          git.exec('push', {u: true}, ['origin', 'master', '--force']).then(function(stdout){
             console.log('Init : OK');
             fullfill('ok');
           }).catch(function(err) {
@@ -59,7 +59,7 @@ module.exports.save = function save(path, files) {
         git.exec('commit', {a: true, m: true}, [branchName]).then(function(stdout) {
           git.exec('push', {u: true}, ['origin', branchName]).then(function(stdout) {
             console.log('Save : OK');
-            fullfill('ok');
+            fullfill({files: files, branch: branchName});
           }).catch(function(err) {
             console.log(err);
             reject(err);
@@ -86,7 +86,7 @@ module.exports.restore = function restore(path, branchName) {
     git.exec('fetch', {all: true}).then(function(stdout) {
       git.exec('reset', {hard: true}, ['origin/' + branchName]).then(function(stdout) {
         console.log('restore : OK');
-        fullfill('ok');
+        fullfill({branch: branchName});
       }).catch(function(err) {
         console.log(err);
         reject(err);

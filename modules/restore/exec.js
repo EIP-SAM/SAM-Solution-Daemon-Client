@@ -11,6 +11,7 @@ module.exports = (socket) => {
     gitService.restore(getUserHome(), msg.branch).then(function(msg) {
       socket.emit('daemon_restore_Exec', {isStart: true, isFinish: true, isSuccess: true, branch: msg.branch, msg: msg});
     }).catch(function(err) {
+      console.log(err)
       socket.emit('daemon_restore_Exec', {isStart: true, isFinish: true, isSuccess: false, branch: msg.branch, msg: err});
     });
   });
