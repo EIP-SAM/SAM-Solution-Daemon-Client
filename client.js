@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 const getUserHome = require('./services/getUserHome');
 const gitService = require('./services/git');
@@ -6,15 +7,20 @@ const gitService = require('./services/git');
 const serverUrl = require('./config/base.config.json').serverUrl;
 const userInfo = require('./config/base.config.json').userInfo;
 
-fs.access(getUserHome() + '/.git', fs.F_OK, function(err){
+fs.access(path.join(getUserHome() + '/.git'), fs.F_OK, function(err){
   console.log(err ? 'Repo not init yet, creating it now' : 'Repo already created');
   if (err) {
     gitService.initRepo(getUserHome()).then(function(msg) {
+      main();
     });
+  } else {
+    main();
   }
 });
 
-let socket = require('socket.io-client')(serverUrl);
-console.log('Listen on server URL : ', serverUrl);
+function main() {
+  let socket = require('socket.io-client')(serverUrl);
+  console.log('Listen on server URL : ', serverUrl);
 
-let register = require('./modules/')(socket);
+  let register = require('./modules/')(socket);
+}

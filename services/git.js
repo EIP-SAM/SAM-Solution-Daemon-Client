@@ -24,9 +24,9 @@ module.exports.initRepo = function initRepo(path) {
     let git = new Git({cwd: path});
     git.exec('init', {}, []).then(function(stdout){
       git.exec('remote', {}, ['add', 'origin', getUserRepoUrl()]).then(function(stdout){
-        git.exec('commit', {}, ['--allow-empty', '-m', 'initial_commit']).then(function(stdout){
+        git.exec('commit', {}, ['--allow-empty', '-m', 'daemon_initial_commit']).then(function(stdout){
           git.exec('push', {u: true}, ['origin', 'master', '--force']).then(function(stdout){
-            console.log('Init : OK');
+            console.log('Repo initialized');
             fullfill('ok');
           }).catch(function(err) {
             console.log(err);
