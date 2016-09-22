@@ -1,0 +1,9 @@
+{
+  "serverUrl": "http://localhost:8080/",
+  "gitServerRoute": "git/",
+  "debug": false,
+  "secret": "mySuperCookieSecretKeyIMustUpdate",
+  "userInfo": {
+    "username": "username"
+  }
+}
