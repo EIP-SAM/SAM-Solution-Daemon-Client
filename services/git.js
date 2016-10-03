@@ -1,6 +1,6 @@
 let os = require('os');
 
-const Git = require('../workers/git');
+const Git = require('git-wrapper');
 
 const debug = require('../config/base.config.json').debug;
 const userInfo = require('../config/base.config.json').userInfo;
