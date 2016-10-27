@@ -88,10 +88,9 @@ module.exports.getOperatingSystem = function () {
   return new Promise(function (fulfill, reject) {
     fulfill({
       status: 'success',
-      operatingSystem: 'Windaube',
-      systemDistribution: '95',
-      kernelVersion: '-42.0.0.1',
-      processorArchitecture: 'i386',
+      operatingSystem: os.platform(),
+      systemDistribution: os.release(),
+      processorArchitecture: os.arch(),
     });
   });
 };
