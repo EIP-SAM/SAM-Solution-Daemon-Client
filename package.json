@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "git-wrapper": "github:eip-sam/node-git-wrapper",
+    "node-notifier": "^4.6.1",
     "os-reboot": "github:eip-sam/OS-Reboot",
     "socket.io-client": "^1.4.6"
   }
