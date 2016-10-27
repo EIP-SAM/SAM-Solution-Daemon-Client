@@ -3,4 +3,5 @@ module.exports = (socket) => {
   const save = require('./save')(socket);
   const restore = require('./restore')(socket);
   const reboot = require('./reboot')(socket);
-}
+  const software = require('./software')(socket);
+};
