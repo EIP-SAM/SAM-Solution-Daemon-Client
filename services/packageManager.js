@@ -1,3 +1,5 @@
+const os = require('os');
+
 //
 // Simulate a successful software packages install
 //
@@ -88,10 +90,9 @@ module.exports.getOperatingSystem = function () {
   return new Promise(function (fulfill, reject) {
     fulfill({
       status: 'success',
-      operatingSystem: 'Windaube',
-      systemDistribution: '95',
-      kernelVersion: '-42.0.0.1',
-      processorArchitecture: 'i386',
+      operatingSystem: os.type(),
+      systemDistribution: os.release(),
+      processorArchitecture: os.arch(),
     });
   });
 };
