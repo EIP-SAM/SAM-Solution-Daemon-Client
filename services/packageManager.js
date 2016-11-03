@@ -90,7 +90,7 @@ module.exports.getOperatingSystem = function () {
   return new Promise(function (fulfill, reject) {
     fulfill({
       status: 'success',
-      operatingSystem: os.platform(),
+      operatingSystem: os.type(),
       systemDistribution: os.release(),
       processorArchitecture: os.arch(),
     });
