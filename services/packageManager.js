@@ -1,3 +1,5 @@
+const os = require('os');
+
 //
 // Simulate a successful software packages install
 //
