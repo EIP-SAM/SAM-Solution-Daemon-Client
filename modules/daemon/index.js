@@ -1,8 +1,8 @@
-const onGetData = require('./getData');
+const onGetUserData = require('./getUserData');
 
 module.exports = (socket) => {
   /*
-    getData : Send user's data
+    GetUserData : Send user's data
    */
-   onGetData(socket);
+   onGetUserData(socket);
 }
