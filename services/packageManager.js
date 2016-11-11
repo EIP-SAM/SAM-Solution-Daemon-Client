@@ -1,50 +1,124 @@
 const os = require('os');
+const pacapt = require('node-pacapt');
 
-//
-// Simulate a successful software packages install
-//
+function install(packages, i, returnObj, fulfill) {
+  const package = packages[i];
+
+  console.log('package', package);
+  pacapt.install(packages).then((output) => {
+    if (output.exitCode === 0) {
+      returnObj.result.push({ packageName: package, installed: true });
+    } else {
+      returnObj.result.push({ packageName: package, installed: false, error: 'return code = ' + output.exitCode });
+    }
+    console.log(output);
+    if (returnObj.result.length == packages.length) {
+      fulfill(returnObj);
+    } else {
+      install(packages, i + 1, returnObj, fulfill);
+    }
+  })
+  .catch((output) => {
+    returnObj.result.push({ packageName: package, installed: false, error: output.error });
+    console.log(output);
+    if (returnObj.result.length == packages.length) {
+      fulfill(returnObj);
+    }
+  });
+}
+
 module.exports.install = function (packages) {
   return new Promise(function (fulfill, reject) {
-    fulfill({
+    const returnObj = {
       status: 'success',
-      request: packages,
-      result: [
-        { packageName: 'foo', installed: true },
-        { packageName: 'bar', installed: false, error: 'Package not found' },
-        { packageName: 'baz', installed: false, error: 'Dependency error, needs `toto` package, which is not available' },
-      ],
-    });
-  });
-};
-
-//
-// Simulate a successful software packages update
-//
-module.exports.update = function (packages) {
-  return new Promise(function (fulfill, reject) {
-    fulfill({
-      status: 'success',
-      request: packages,
-      result: [
-        { packageName: 'foo', updated: true },
-        { packageName: 'bar', updated: false, error: 'Package is already at the higher version available' },
-        { packageName: 'baz', updated: false, error: 'Dependency error, needs `toto` >= v1.5, found `toto` = v1.3' },
-      ],
-    });
-  });
-};
-
-//
-// Simulate a fatal error during software packages remove
-//
-module.exports.remove = function (packages) {
-  return new Promise(function (fulfill, reject) {
-    fulfill({
-      status: 'failure',
       request: packages,
       result: [],
-      error: 'Cannot find `pacapt` script on target machine',
+    };
+
+    install(packages, 0, returnObj, fulfill);
+  });
+};
+
+function update(packages, i, returnObj, fulfill) {
+  const package = packages[i];
+
+  console.log('package', package);
+  pacapt.update(packages).then((output) => {
+    if (output.exitCode === 0) {
+      returnObj.result.push({ packageName: package, updated: true });
+    } else {
+      returnObj.result.push({ packageName: package, updated: false, error: 'return code = ' + output.exitCode });
+    }
+    console.log(output);
+    if (returnObj.result.length == packages.length) {
+      fulfill(returnObj);
+    } else {
+      update(packages, i + 1, returnObj, fulfill);
+    }
+  })
+  .catch((output) => {
+    returnObj.result.push({ packageName: package, updated: false, error: output.error });
+    console.log(output);
+    if (returnObj.result.length == packages.length) {
+      fulfill(returnObj);
+    }
+  });
+}
+
+module.exports.update = function (packages) {
+  return new Promise(function (fulfill, reject) {
+    const returnObj = {
+      status: 'success',
+      request: packages,
+      result: [],
+    };
+
+    pacapt.updateDatabase().then((output) => {
+      update(packages, 0, returnObj, fulfill);
+    })
+    .catch((output) => {
+      returnObj.status = 'failure';
+      returnObj.error = output.error;
+      fulfill(returnObj);
     });
+  });
+};
+
+function remove(packages, i, returnObj, fulfill) {
+  const package = packages[i];
+
+  console.log('package', package);
+  pacapt.remove(packages).then((output) => {
+    if (output.exitCode === 0) {
+      returnObj.result.push({ packageName: package, removed: true });
+    } else {
+      returnObj.result.push({ packageName: package, removed: false, error: 'return code = ' + output.exitCode });
+    }
+    console.log(output);
+    if (returnObj.result.length == packages.length) {
+      fulfill(returnObj);
+    } else {
+      remove(packages, i + 1, returnObj, fulfill);
+    }
+  })
+  .catch((output) => {
+    returnObj.result.push({ packageName: package, removed: false, error: output.error });
+    console.log(output);
+    if (returnObj.result.length == packages.length) {
+      fulfill(returnObj);
+    }
+  });
+}
+
+module.exports.remove = function (packages) {
+  return new Promise(function (fulfill, reject) {
+    const returnObj = {
+      status: 'success',
+      request: packages,
+      result: [],
+    };
+
+    remove(packages, 0, returnObj, fulfill);
   });
 };
 
