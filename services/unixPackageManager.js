@@ -4,7 +4,7 @@ function install(packages, i, returnObj, fulfill) {
   const package = packages[i];
 
   console.log('package', package);
-  pacapt.install(packages).then((output) => {
+  pacapt.install([package]).then((output) => {
     if (output.exitCode === 0) {
       returnObj.result.push({ packageName: package, installed: true });
     } else {
@@ -42,7 +42,7 @@ function update(packages, i, returnObj, fulfill) {
   const package = packages[i];
 
   console.log('package', package);
-  pacapt.update(packages).then((output) => {
+  pacapt.update([package]).then((output) => {
     if (output.exitCode === 0) {
       returnObj.result.push({ packageName: package, updated: true });
     } else {
@@ -87,7 +87,7 @@ function remove(packages, i, returnObj, fulfill) {
   const package = packages[i];
 
   console.log('package', package);
-  pacapt.remove(packages).then((output) => {
+  pacapt.remove([package]).then((output) => {
     if (output.exitCode === 0) {
       returnObj.result.push({ packageName: package, removed: true });
     } else {
