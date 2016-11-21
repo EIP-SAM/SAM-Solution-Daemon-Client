@@ -1,17 +1,15 @@
 const pacapt = require('node-pacapt');
+const semaphore = require('semaphore')(1);
 
-function install(packages, i, returnObj, fulfill) {
+function install(packages, i, returnObj, fulfill, semaphore) {
   const package = packages[i];
 
   console.log('package', package);
   pacapt.install([package]).then((output) => {
-    if (output.exitCode === 0) {
-      returnObj.result.push({ packageName: package, installed: true });
-    } else {
-      returnObj.result.push({ packageName: package, installed: false, error: 'return code = ' + output.exitCode });
-    }
+    returnObj.result.push({ packageName: package, installed: true });
     console.log(output);
     if (returnObj.result.length == packages.length) {
+      semaphore.leave();
       fulfill(returnObj);
     } else {
       install(packages, i + 1, returnObj, fulfill);
@@ -21,6 +19,7 @@ function install(packages, i, returnObj, fulfill) {
     returnObj.result.push({ packageName: package, installed: false, error: output.error });
     console.log(output);
     if (returnObj.result.length == packages.length) {
+      semaphore.leave();
       fulfill(returnObj);
     }
   });
@@ -34,22 +33,21 @@ module.exports.install = function (packages) {
       result: [],
     };
 
-    install(packages, 0, returnObj, fulfill);
+    semaphore.take(() => {
+      install(packages, 0, returnObj, fulfill, semaphore);
+    });
   });
 };
 
-function update(packages, i, returnObj, fulfill) {
+function update(packages, i, returnObj, fulfill, semaphore) {
   const package = packages[i];
 
   console.log('package', package);
   pacapt.update([package]).then((output) => {
-    if (output.exitCode === 0) {
-      returnObj.result.push({ packageName: package, updated: true });
-    } else {
-      returnObj.result.push({ packageName: package, updated: false, error: 'return code = ' + output.exitCode });
-    }
+    returnObj.result.push({ packageName: package, updated: true });
     console.log(output);
     if (returnObj.result.length == packages.length) {
+      semaphore.leave();
       fulfill(returnObj);
     } else {
       update(packages, i + 1, returnObj, fulfill);
@@ -59,6 +57,7 @@ function update(packages, i, returnObj, fulfill) {
     returnObj.result.push({ packageName: package, updated: false, error: output.error });
     console.log(output);
     if (returnObj.result.length == packages.length) {
+      semaphore.leave();
       fulfill(returnObj);
     }
   });
@@ -72,29 +71,29 @@ module.exports.update = function (packages) {
       result: [],
     };
 
-    pacapt.updateDatabase().then((output) => {
-      update(packages, 0, returnObj, fulfill);
-    })
-    .catch((output) => {
-      returnObj.status = 'failure';
-      returnObj.error = output.error;
-      fulfill(returnObj);
+    semaphore.take(() => {
+      pacapt.updateDatabase().then((output) => {
+        update(packages, 0, returnObj, fulfill, semaphore);
+      })
+      .catch((output) => {
+        returnObj.status = 'failure';
+        returnObj.error = output.error;
+        semaphore.leave();
+        fulfill(returnObj);
+      });
     });
   });
 };
 
-function remove(packages, i, returnObj, fulfill) {
+function remove(packages, i, returnObj, fulfill, semaphore) {
   const package = packages[i];
 
   console.log('package', package);
   pacapt.remove([package]).then((output) => {
-    if (output.exitCode === 0) {
-      returnObj.result.push({ packageName: package, removed: true });
-    } else {
-      returnObj.result.push({ packageName: package, removed: false, error: 'return code = ' + output.exitCode });
-    }
+    returnObj.result.push({ packageName: package, removed: true });
     console.log(output);
     if (returnObj.result.length == packages.length) {
+      semaphore.leave();
       fulfill(returnObj);
     } else {
       remove(packages, i + 1, returnObj, fulfill);
@@ -104,6 +103,7 @@ function remove(packages, i, returnObj, fulfill) {
     returnObj.result.push({ packageName: package, removed: false, error: output.error });
     console.log(output);
     if (returnObj.result.length == packages.length) {
+      semaphore.leave();
       fulfill(returnObj);
     }
   });
@@ -117,7 +117,9 @@ module.exports.remove = function (packages) {
       result: [],
     };
 
-    remove(packages, 0, returnObj, fulfill);
+    semaphore.take(() => {
+      remove(packages, 0, returnObj, fulfill, semaphore);
+    });
   });
 };
 
