@@ -123,31 +123,78 @@ module.exports.remove = function (packages) {
   });
 };
 
+function parsePacmanQuery(package, output, returnObj, fulfill) {
+  returnObj.result.push({ packageName: package, description: 'A super `' + package + '` description', installed: true });
+  returnObj.result.push({ packageName: package + '-foo', description: 'A super `' + package + '-foo` description', installed: false });
+  returnObj.result.push({ packageName: package + '-baz', description: 'A super `' + package + '-baz` description', installed: true });
+  fulfill(returnObj);
+}
+
+function parseDpkgQuery(package, output, returnObj, fulfill) {
+  returnObj.result.push({ packageName: package, description: 'A super `' + package + '` description', installed: true });
+  returnObj.result.push({ packageName: package + '-foo', description: 'A super `' + package + '-foo` description', installed: false });
+  returnObj.result.push({ packageName: package + '-baz', description: 'A super `' + package + '-baz` description', installed: true });
+  fulfill(returnObj);
+}
+
+const queriesParser = {
+  pacman: parsePacmanQuery,
+  dpkg: parseDpkgQuery,
+};
+
+function query(package, returnObj, fulfill) {
+  if (queriesParser[pacapt.localInfos.packageManager] !== undefined) {
+    pacapt.Ss([package]).then((output) => {
+      queriesParser[pacapt.localInfos.packageManager](package, output, returnObj, fulfill);
+    }).catch((output) => {
+      returnObj.status = 'failure';
+      returnObj.error = output.error;
+      returnObj.output = output;
+      fulfill(returnObj);
+    });
+  } else {
+    returnObj.status = 'failure';
+    returnObj.error = `Package manager ${pacapt.localInfos.packageManager} is not supported (yet) for package queries`;
+    fulfill(returnObj);
+  }
+}
+
 //
 // Simulate of successful package query
+// -> query a list of available packages from a string
 //
 module.exports.query = function (package) {
   return new Promise(function (fulfill, reject) {
-    fulfill({
+    const returnObj = {
       status: 'success',
       request: package,
-      result: [
-        { packageName: package, description: 'A super `' + package + '` description', installed: true },
-        { packageName: package + '-foo', description: 'A super `' + package + '-foo` description', installed: false },
-        { packageName: package + '-baz', description: 'A super `' + package + '-baz` description', installed: true },
-      ],
-    });
+      result: [],
+    };
+
+    if (pacapt.localInfos.packageManager === 'undefined') {
+      pacapt.init().then(() => {
+        query(package, returnObj, fulfill);
+      }).catch((error) => {
+        returnObj.status = 'failure';
+        returnObj.error = `error during pacapt initialization: ${error}`;
+        fulfill(returnObj);
+      });
+    } else {
+      query(package, returnObj, fulfill);
+    }
   });
 };
 
 //
 // Simulate a successful list installed packages query
+// -> query a list of all installed packages
 //
 module.exports.list = function () {
   return new Promise(function (fulfill, reject) {
     fulfill({
       status: 'success',
       result: [
+        { packageName: 'cmake', description: 'A super `cmake` description', installed: true },
         { packageName: 'git', description: 'A super `git` description', installed: true },
         { packageName: 'git-baz', description: 'A super `git-baz` description', installed: true },
         { packageName: 'foo', description: 'A super `foo` description', installed: true },
