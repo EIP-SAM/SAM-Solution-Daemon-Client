@@ -148,6 +148,7 @@ module.exports.list = function () {
     fulfill({
       status: 'success',
       result: [
+        { packageName: 'cmake', description: 'A super `cmake` description', installed: true },
         { packageName: 'git', description: 'A super `git` description', installed: true },
         { packageName: 'git-baz', description: 'A super `git-baz` description', installed: true },
         { packageName: 'foo', description: 'A super `foo` description', installed: true },
