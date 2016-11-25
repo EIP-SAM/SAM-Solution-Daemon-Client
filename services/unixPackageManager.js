@@ -245,19 +245,19 @@ function parsePacmanList(output, returnObj, fulfill) {
   });
   stdout = stdout.split('\n');
 
-  console.log(stdout);
+  stdout.forEach((line) => {
+    if (line !== '') {
+      const packageData = {};
 
-  fulfill({
-    status: 'success',
-    result: [
-      { packageName: 'cmake', description: 'A super `cmake` description', installed: true },
-      { packageName: 'git', description: 'A super `git` description', installed: true },
-      { packageName: 'git-baz', description: 'A super `git-baz` description', installed: true },
-      { packageName: 'foo', description: 'A super `foo` description', installed: true },
-      { packageName: 'bar', description: 'A super `bar` description', installed: true },
-      { packageName: 'baz', description: 'A super `baz` description', installed: true },
-    ],
+      packageData.packageName = line.split(' ')[0];
+      packageData.version = line.split(' ')[1];
+      packageData.installed = true;
+      packageData.description = 'not available';
+      returnObj.result.push(packageData);
+    }
   });
+
+  fulfill(returnObj);
 }
 
 function parseDpkgList(package, output, returnObj, fulfill) {
