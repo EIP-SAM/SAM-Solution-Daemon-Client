@@ -132,25 +132,24 @@ function parsePacmanQuery(package, output, returnObj, fulfill) {
   });
   stdout = stdout.split('\n');
 
-  const packages = [];
   var packageData = {};
   stdout.forEach((line) => {
     if (line !== '') {
       if (line[0] !== ' ') {
         packageData = {};
         packageData.repository = line.split('/')[0];
-        packageData.name = line.split('/')[1].split(' ')[0];
+        packageData.packageName = line.split('/')[1].split(' ')[0];
         packageData.version = line.split('/')[1].split(' ')[1];
         packageData.installed = line.split('[')[1] ? true : false;
       } else {
         packageData.description = line.substr(4);
-        packages.push(packageData);
+        returnObj.result.push(packageData);
       }
     }
   });
 
-  packages.forEach((package) => {
-    console.log('name:', package.name);
+  returnObj.result.forEach((package) => {
+    console.log('name:', package.packageName);
     console.log('installed:', package.installed);
     console.log('version:', package.version);
     console.log('description:', package.description);
@@ -158,9 +157,6 @@ function parsePacmanQuery(package, output, returnObj, fulfill) {
     console.log();
   });
 
-  returnObj.result.push({ packageName: package, description: 'A super `' + package + '` description', installed: true });
-  returnObj.result.push({ packageName: package + '-foo', description: 'A super `' + package + '-foo` description', installed: false });
-  returnObj.result.push({ packageName: package + '-baz', description: 'A super `' + package + '-baz` description', installed: true });
   fulfill(returnObj);
 }
 
