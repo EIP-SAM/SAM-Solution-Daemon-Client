@@ -260,7 +260,7 @@ function parsePacmanList(output, returnObj, fulfill) {
   fulfill(returnObj);
 }
 
-function parseDpkgList(package, output, returnObj, fulfill) {
+function parseDpkgList(output, returnObj, fulfill) {
   var stdout = '';
   output.text.forEach((outputObject) => {
     if (outputObject.type == 'stdout') {
@@ -269,19 +269,35 @@ function parseDpkgList(package, output, returnObj, fulfill) {
   });
   stdout = stdout.split('\n');
 
-  console.log(stdout);
+  stdout.forEach((line) => {
+    if (line !== '') {
+      const packageData = {};
 
-  fulfill({
-    status: 'success',
-    result: [
-      { packageName: 'cmake', description: 'A super `cmake` description', installed: true },
-      { packageName: 'git', description: 'A super `git` description', installed: true },
-      { packageName: 'git-baz', description: 'A super `git-baz` description', installed: true },
-      { packageName: 'foo', description: 'A super `foo` description', installed: true },
-      { packageName: 'bar', description: 'A super `bar` description', installed: true },
-      { packageName: 'baz', description: 'A super `baz` description', installed: true },
-    ],
+	packageData.packageName = line.substr(4).split(' ')[0];
+
+	packageData.version = line.substr(line.indexOf(packageData.packageName) + packageData.packageName.length);
+	while (packageData.version.indexOf(' ') === 0) {
+	    packageData.version = packageData.version.substr(1);
+	}
+	packageData.version = packageData.version.substr(0, packageData.version.indexOf(' '));
+
+	packageData.architecture = line.substr(line.indexOf(packageData.version) + packageData.version.length);
+	while (packageData.architecture.indexOf(' ') === 0) {
+	    packageData.architecture = packageData.architecture.substr(1);
+	}
+	packageData.architecture = packageData.architecture.substr(0, packageData.architecture.indexOf(' '));
+
+	packageData.description = line.substr(line.indexOf(packageData.architecture) + packageData.architecture.length);
+	while (packageData.description.indexOf(' ') === 0) {
+	    packageData.description = packageData.description.substr(1);
+	}
+
+	packageData.installed = true;
+      returnObj.result.push(packageData);
+    }
   });
+
+  fulfill(returnObj);
 }
 
 const listParser = {
