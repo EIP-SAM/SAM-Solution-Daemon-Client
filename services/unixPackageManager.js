@@ -165,6 +165,28 @@ function parsePacmanQuery(package, output, returnObj, fulfill) {
 }
 
 function parseDpkgQuery(package, output, returnObj, fulfill) {
+    var stdout = '';
+    output.text.forEach((outputObject) => {
+	if (outputObject.type == 'stdout') {
+	    stdout += outputObject.data;
+	}
+    });
+    stdout = stdout.split('\n');
+    console.log(stdout);
+
+    const packages = [];
+    var packageData = {};
+    stdout.forEach((line) => {
+	packageData = {};
+	packageData.name = line.split(' ')[0];
+	packageData.description = line.substr(packageData.name.length + 3);
+	packages.push(packageData);
+
+	console.log('name:', packageData.name);
+	console.log('description:', packageData.description);
+	console.log();
+    });
+
   returnObj.result.push({ packageName: package, description: 'A super `' + package + '` description', installed: true });
   returnObj.result.push({ packageName: package + '-foo', description: 'A super `' + package + '-foo` description', installed: false });
   returnObj.result.push({ packageName: package + '-baz', description: 'A super `' + package + '-baz` description', installed: true });
