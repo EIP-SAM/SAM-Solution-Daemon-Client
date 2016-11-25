@@ -273,26 +273,26 @@ function parseDpkgList(output, returnObj, fulfill) {
     if (line !== '') {
       const packageData = {};
 
-	packageData.packageName = line.substr(4).split(' ')[0];
+      packageData.packageName = line.substr(4).split(' ')[0];
 
-	packageData.version = line.substr(line.indexOf(packageData.packageName) + packageData.packageName.length);
-	while (packageData.version.indexOf(' ') === 0) {
-	    packageData.version = packageData.version.substr(1);
-	}
-	packageData.version = packageData.version.substr(0, packageData.version.indexOf(' '));
+      packageData.version = line.substr(line.indexOf(packageData.packageName) + packageData.packageName.length);
+      while (packageData.version.indexOf(' ') === 0) {
+        packageData.version = packageData.version.substr(1);
+      }
+      packageData.version = packageData.version.substr(0, packageData.version.indexOf(' '));
 
-	packageData.architecture = line.substr(line.indexOf(packageData.version) + packageData.version.length);
-	while (packageData.architecture.indexOf(' ') === 0) {
-	    packageData.architecture = packageData.architecture.substr(1);
-	}
-	packageData.architecture = packageData.architecture.substr(0, packageData.architecture.indexOf(' '));
+      packageData.architecture = line.substr(line.indexOf(packageData.version) + packageData.version.length);
+      while (packageData.architecture.indexOf(' ') === 0) {
+        packageData.architecture = packageData.architecture.substr(1);
+      }
+      packageData.architecture = packageData.architecture.substr(0, packageData.architecture.indexOf(' '));
 
-	packageData.description = line.substr(line.indexOf(packageData.architecture) + packageData.architecture.length);
-	while (packageData.description.indexOf(' ') === 0) {
-	    packageData.description = packageData.description.substr(1);
-	}
+      packageData.description = line.substr(line.indexOf(packageData.architecture) + packageData.architecture.length);
+      while (packageData.description.indexOf(' ') === 0) {
+        packageData.description = packageData.description.substr(1);
+      }
 
-	packageData.installed = true;
+      packageData.installed = true;
       returnObj.result.push(packageData);
     }
   });
