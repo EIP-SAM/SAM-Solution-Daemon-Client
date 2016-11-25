@@ -236,22 +236,97 @@ module.exports.query = function (package) {
   });
 };
 
+function parsePacmanList(output, returnObj, fulfill) {
+  var stdout = '';
+  output.text.forEach((outputObject) => {
+    if (outputObject.type == 'stdout') {
+      stdout += outputObject.data;
+    }
+  });
+  stdout = stdout.split('\n');
+
+  console.log(stdout);
+
+  fulfill({
+    status: 'success',
+    result: [
+      { packageName: 'cmake', description: 'A super `cmake` description', installed: true },
+      { packageName: 'git', description: 'A super `git` description', installed: true },
+      { packageName: 'git-baz', description: 'A super `git-baz` description', installed: true },
+      { packageName: 'foo', description: 'A super `foo` description', installed: true },
+      { packageName: 'bar', description: 'A super `bar` description', installed: true },
+      { packageName: 'baz', description: 'A super `baz` description', installed: true },
+    ],
+  });
+}
+
+function parseDpkgList(package, output, returnObj, fulfill) {
+  var stdout = '';
+  output.text.forEach((outputObject) => {
+    if (outputObject.type == 'stdout') {
+      stdout += outputObject.data;
+    }
+  });
+  stdout = stdout.split('\n');
+
+  console.log(stdout);
+
+  fulfill({
+    status: 'success',
+    result: [
+      { packageName: 'cmake', description: 'A super `cmake` description', installed: true },
+      { packageName: 'git', description: 'A super `git` description', installed: true },
+      { packageName: 'git-baz', description: 'A super `git-baz` description', installed: true },
+      { packageName: 'foo', description: 'A super `foo` description', installed: true },
+      { packageName: 'bar', description: 'A super `bar` description', installed: true },
+      { packageName: 'baz', description: 'A super `baz` description', installed: true },
+    ],
+  });
+}
+
+const listParser = {
+  pacman: parsePacmanList,
+  dpkg: parseDpkgList,
+};
+
+function list(returnObj, fulfill) {
+  if (listParser[pacapt.localInfos.packageManager] !== undefined) {
+    pacapt.Q().then((output) => {
+      listParser[pacapt.localInfos.packageManager](output, returnObj, fulfill);
+    }).catch((output) => {
+      returnObj.status = 'failure';
+      returnObj.error = output.error;
+      returnObj.output = output;
+      fulfill(returnObj);
+    });
+  } else {
+    returnObj.status = 'failure';
+    returnObj.error = `Package manager ${pacapt.localInfos.packageManager} is not supported (yet) for package listing`;
+    fulfill(returnObj);
+  }
+}
+
 //
 // Simulate a successful list installed packages query
 // -> query a list of all installed packages
 //
 module.exports.list = function () {
   return new Promise(function (fulfill, reject) {
-    fulfill({
+    const returnObj = {
       status: 'success',
-      result: [
-        { packageName: 'cmake', description: 'A super `cmake` description', installed: true },
-        { packageName: 'git', description: 'A super `git` description', installed: true },
-        { packageName: 'git-baz', description: 'A super `git-baz` description', installed: true },
-        { packageName: 'foo', description: 'A super `foo` description', installed: true },
-        { packageName: 'bar', description: 'A super `bar` description', installed: true },
-        { packageName: 'baz', description: 'A super `baz` description', installed: true },
-      ],
-    });
+      result: [],
+    };
+
+    if (pacapt.localInfos.packageManager === 'undefined') {
+      pacapt.init().then(() => {
+        list(returnObj, fulfill);
+      }).catch((error) => {
+        returnObj.status = 'failure';
+        returnObj.error = `error during pacapt initialization: ${error}`;
+        fulfill(returnObj);
+      });
+    } else {
+      list(returnObj, fulfill);
+    }
   });
 };
