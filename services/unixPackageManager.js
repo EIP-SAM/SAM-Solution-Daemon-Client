@@ -148,15 +148,6 @@ function parsePacmanQuery(package, output, returnObj, fulfill) {
     }
   });
 
-  returnObj.result.forEach((package) => {
-    console.log('name:', package.packageName);
-    console.log('installed:', package.installed);
-    console.log('version:', package.version);
-    console.log('description:', package.description);
-    console.log('repository:', package.repository);
-    console.log();
-  });
-
   fulfill(returnObj);
 }
 
@@ -177,11 +168,6 @@ function parseDpkgQuery(package, output, returnObj, fulfill) {
       packageData.description = line.substr(packageData.name.length + 3);
       packageData.installed = false;
       returnObj.result.push(packageData);
-
-      console.log('name:', packageData.packageName);
-      console.log('description:', packageData.description);
-      console.log('description:', packageData.installed);
-      console.log();
     }
   });
 
