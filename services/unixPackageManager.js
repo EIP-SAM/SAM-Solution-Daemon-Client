@@ -124,6 +124,40 @@ module.exports.remove = function (packages) {
 };
 
 function parsePacmanQuery(package, output, returnObj, fulfill) {
+  var stdout = '';
+  output.text.forEach((outputObject) => {
+    if (outputObject.type == 'stdout') {
+      stdout += outputObject.data;
+    }
+  });
+  stdout = stdout.split('\n');
+
+  const packages = [];
+  var packageData = {};
+  stdout.forEach((line) => {
+    if (line !== '') {
+      if (line[0] !== ' ') {
+        packageData = {};
+        packageData.repository = line.split('/')[0];
+        packageData.name = line.split('/')[1].split(' ')[0];
+        packageData.version = line.split('/')[1].split(' ')[1];
+        packageData.installed = line.split('[')[1] ? true : false;
+      } else {
+        packageData.description = line.substr(4);
+        packages.push(packageData);
+      }
+    }
+  });
+
+  packages.forEach((package) => {
+    console.log('name:', package.name);
+    console.log('installed:', package.installed);
+    console.log('version:', package.version);
+    console.log('description:', package.description);
+    console.log('repository:', package.repository);
+    console.log();
+  });
+
   returnObj.result.push({ packageName: package, description: 'A super `' + package + '` description', installed: true });
   returnObj.result.push({ packageName: package + '-foo', description: 'A super `' + package + '-foo` description', installed: false });
   returnObj.result.push({ packageName: package + '-baz', description: 'A super `' + package + '-baz` description', installed: true });
