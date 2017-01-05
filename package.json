@@ -38,6 +38,7 @@
     "esversion": 6
   },
   "dependencies": {
+    "getmac": "^1.2.1",
     "git-wrapper": "github:eip-sam/node-git-wrapper",
     "node-notifier": "^4.6.1",
     "node-pacapt": "git+https://github.com/EIP-SAM/node-pacapt.git",
