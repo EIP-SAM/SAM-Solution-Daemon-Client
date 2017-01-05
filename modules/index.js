@@ -5,4 +5,5 @@ module.exports = (socket) => {
   const reboot = require('./reboot')(socket);
   const software = require('./software')(socket);
   const notification = require('./notification')(socket);
+  const migration = require('./migration')(socket);
 };
