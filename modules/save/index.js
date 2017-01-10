@@ -5,5 +5,5 @@ module.exports = (socket) => {
   /*
     exec : exec a save
    */
-   onExec(socket, getUserHome());
-}
+  onExec(socket, getUserHome());
+};

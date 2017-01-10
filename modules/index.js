@@ -1,9 +1,17 @@
+const daemon = require('./daemon');
+const save = require('./save');
+const restore = require('./restore');
+const reboot = require('./reboot');
+const software = require('./software');
+const notification = require('./notification');
+const migration = require('./migration');
+
 module.exports = (socket) => {
-  const daemon = require('./daemon')(socket);
-  const save = require('./save')(socket);
-  const restore = require('./restore')(socket);
-  const reboot = require('./reboot')(socket);
-  const software = require('./software')(socket);
-  const notification = require('./notification')(socket);
-  const migration = require('./migration')(socket);
+  daemon(socket);
+  save(socket);
+  restore(socket);
+  reboot(socket);
+  software(socket);
+  notification(socket);
+  migration(socket);
 };

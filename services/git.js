@@ -1,46 +1,43 @@
-let os = require('os');
+const os = require('os');
 
 const Git = require('git-wrapper');
 
-const debug = require('../config/base.config.json').debug;
-const userInfo = require('../config/base.config.json').userInfo;
-
 const config = require('../config/base.config.json');
 
-let getUserRepoUrl = function () {
-  return config.serverUrl + config.gitServerRoute + config.userInfo.username + '.git';
-};
+function getUserRepoUrl() {
+  return `${config.serverUrl + config.gitServerRoute + config.userInfo.username}.git`;
+}
 
-let getBranchNameToSave = function () {
-  let now = new Date().toISOString().
-    replace(/T/, ' ').
-    replace(/\..+/, '').
-    replace(new RegExp(':', 'g'), '-');
-  return '\'' + os.hostname() + '_' + now.split(' ').join('_') + '\'';
-};
+function getBranchNameToSave() {
+  const now = new Date().toISOString()
+    .replace(/T/, ' ')
+    .replace(/\..+/, '')
+    .replace(new RegExp(':', 'g'), '-');
+  return `'${os.hostname()}_${now.split(' ').join('_')}'`;
+}
 
 module.exports.initRepo = function initRepo(path) {
-  return new Promise(function(fullfill, reject) {
-    let git = new Git({cwd: path});
-    git.exec('init', {}, []).then(function(stdout){
-      git.exec('remote', {}, ['add', 'origin', getUserRepoUrl()]).then(function(stdout){
-        git.exec('commit', {}, ['--allow-empty', '-m', 'daemon_initial_commit']).then(function(stdout){
-          git.exec('push', {u: true}, ['origin', 'master', '--force']).then(function(stdout){
+  return new Promise((fullfill, reject) => {
+    const git = new Git({ cwd: path });
+    git.exec('init', {}, []).then(() => {
+      git.exec('remote', {}, ['add', 'origin', getUserRepoUrl()]).then(() => {
+        git.exec('commit', {}, ['--allow-empty', '-m', 'daemon_initial_commit']).then(() => {
+          git.exec('push', { u: true }, ['origin', 'master', '--force']).then(() => {
             console.log('Repo initialized');
             fullfill('ok');
-          }).catch(function(err) {
+          }).catch((err) => {
             console.log(err);
             reject(err);
           });
-        }).catch(function(err) {
+        }).catch((err) => {
           console.log(err);
           reject(err);
         });
-      }).catch(function(err) {
+      }).catch((err) => {
         console.log(err);
         reject(err);
       });
-    }).catch(function(err) {
+    }).catch((err) => {
       console.log(err);
       reject(err);
     });
@@ -48,30 +45,30 @@ module.exports.initRepo = function initRepo(path) {
 };
 
 module.exports.save = function save(path, files) {
-  return new Promise(function(fullfill, reject) {
-    let git = new Git({cwd: path});
-    let addOptions = (files == '*' ? {all: true} : {});
-    let addArgs = (files == '*' ? [] : files);
-    let branchName = getBranchNameToSave();
+  return new Promise((fullfill, reject) => {
+    const git = new Git({ cwd: path });
+    const addOptions = (files === '*' ? { all: true } : {});
+    const addArgs = (files === '*' ? [] : files);
+    const branchName = getBranchNameToSave();
 
-    git.exec('checkout', {b: true}, [branchName]).then(function(stdout) {
-      git.exec('add', addOptions, addArgs).then(function(stdout) {
-        git.exec('commit', {a: true, m: true}, [branchName, '--allow-empty']).then(function(stdout) {
-          git.exec('push', {u: true}, ['origin', branchName]).then(function(stdout) {
+    git.exec('checkout', { b: true }, [branchName]).then(() => {
+      git.exec('add', addOptions, addArgs).then(() => {
+        git.exec('commit', { a: true, m: true }, [branchName, '--allow-empty']).then(() => {
+          git.exec('push', { u: true }, ['origin', branchName]).then(() => {
             console.log('Save : OK');
-            fullfill({files: files, branch: branchName});
-          }).catch(function(err) {
+            fullfill({ files, branch: branchName });
+          }).catch((err) => {
             reject(err);
           });
-        }).catch(function(err) {
+        }).catch((err) => {
           console.log(err);
           reject(err);
         });
-      }).catch(function(err) {
+      }).catch((err) => {
         console.log(err);
         reject(err);
       });
-    }).catch(function(err) {
+    }).catch((err) => {
       console.log(err);
       reject(err);
     });
@@ -79,17 +76,17 @@ module.exports.save = function save(path, files) {
 };
 
 module.exports.restore = function restore(path, branchName) {
-  return new Promise(function(fullfill, reject) {
-    let git = new Git({cwd: path});
+  return new Promise((fullfill, reject) => {
+    const git = new Git({ cwd: path });
 
-    git.exec('fetch', {all: true}).then(function(stdout) {
-      git.exec('reset', {hard: true}, ['origin/' + branchName]).then(function(stdout) {
+    git.exec('fetch', { all: true }).then(() => {
+      git.exec('reset', { hard: true }, [`origin/${branchName}`]).then(() => {
         console.log('restore : OK');
-        fullfill({branch: branchName});
-      }).catch(function(err) {
+        fullfill({ branch: branchName });
+      }).catch((err) => {
         reject(err);
       });
-    }).catch(function(err) {
+    }).catch((err) => {
       console.log(err);
       reject(err);
     });

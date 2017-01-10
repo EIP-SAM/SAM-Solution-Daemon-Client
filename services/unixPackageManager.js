@@ -2,13 +2,13 @@ const pacapt = require('node-pacapt');
 const semaphore = require('semaphore')(1);
 
 function install(packages, i, returnObj, fulfill, semaphore) {
-  const package = packages[i];
+  const packageName = packages[i];
 
-  console.log('package', package);
-  pacapt.install([package]).then((output) => {
-    returnObj.result.push({ packageName: package, installed: true });
+  console.log('package', packageName);
+  pacapt.install([packageName]).then((output) => {
+    returnObj.result.push({ packageName, installed: true });
     console.log(output);
-    if (returnObj.result.length == packages.length) {
+    if (returnObj.result.length === packages.length) {
       semaphore.leave();
       fulfill(returnObj);
     } else {
@@ -16,17 +16,17 @@ function install(packages, i, returnObj, fulfill, semaphore) {
     }
   })
   .catch((output) => {
-    returnObj.result.push({ packageName: package, installed: false, error: output.error });
+    returnObj.result.push({ packageName, installed: false, error: output.error });
     console.log(output);
-    if (returnObj.result.length == packages.length) {
+    if (returnObj.result.length === packages.length) {
       semaphore.leave();
       fulfill(returnObj);
     }
   });
 }
 
-module.exports.install = function (packages) {
-  return new Promise(function (fulfill, reject) {
+module.exports.install = function installExported(packages) {
+  return new Promise((fulfill) => {
     const returnObj = {
       status: 'success',
       request: packages,
@@ -40,13 +40,13 @@ module.exports.install = function (packages) {
 };
 
 function update(packages, i, returnObj, fulfill, semaphore) {
-  const package = packages[i];
+  const packageName = packages[i];
 
-  console.log('package', package);
-  pacapt.update([package]).then((output) => {
-    returnObj.result.push({ packageName: package, updated: true });
+  console.log('package', packageName);
+  pacapt.update([packageName]).then((output) => {
+    returnObj.result.push({ packageName, updated: true });
     console.log(output);
-    if (returnObj.result.length == packages.length) {
+    if (returnObj.result.length === packages.length) {
       semaphore.leave();
       fulfill(returnObj);
     } else {
@@ -54,17 +54,17 @@ function update(packages, i, returnObj, fulfill, semaphore) {
     }
   })
   .catch((output) => {
-    returnObj.result.push({ packageName: package, updated: false, error: output.error });
+    returnObj.result.push({ packageName, updated: false, error: output.error });
     console.log(output);
-    if (returnObj.result.length == packages.length) {
+    if (returnObj.result.length === packages.length) {
       semaphore.leave();
       fulfill(returnObj);
     }
   });
 }
 
-module.exports.update = function (packages) {
-  return new Promise(function (fulfill, reject) {
+module.exports.update = function updateExported(packages) {
+  return new Promise((fulfill) => {
     const returnObj = {
       status: 'success',
       request: packages,
@@ -72,7 +72,7 @@ module.exports.update = function (packages) {
     };
 
     semaphore.take(() => {
-      pacapt.updateDatabase().then((output) => {
+      pacapt.updateDatabase().then(() => {
         update(packages, 0, returnObj, fulfill, semaphore);
       })
       .catch((output) => {
@@ -86,13 +86,13 @@ module.exports.update = function (packages) {
 };
 
 function remove(packages, i, returnObj, fulfill, semaphore) {
-  const package = packages[i];
+  const packageName = packages[i];
 
-  console.log('package', package);
-  pacapt.remove([package]).then((output) => {
-    returnObj.result.push({ packageName: package, removed: true });
+  console.log('package', packageName);
+  pacapt.remove([packageName]).then((output) => {
+    returnObj.result.push({ packageName, removed: true });
     console.log(output);
-    if (returnObj.result.length == packages.length) {
+    if (returnObj.result.length === packages.length) {
       semaphore.leave();
       fulfill(returnObj);
     } else {
@@ -100,17 +100,17 @@ function remove(packages, i, returnObj, fulfill, semaphore) {
     }
   })
   .catch((output) => {
-    returnObj.result.push({ packageName: package, removed: false, error: output.error });
+    returnObj.result.push({ packageName, removed: false, error: output.error });
     console.log(output);
-    if (returnObj.result.length == packages.length) {
+    if (returnObj.result.length === packages.length) {
       semaphore.leave();
       fulfill(returnObj);
     }
   });
 }
 
-module.exports.remove = function (packages) {
-  return new Promise(function (fulfill, reject) {
+module.exports.remove = function removeExported(packages) {
+  return new Promise((fulfill) => {
     const returnObj = {
       status: 'success',
       request: packages,
@@ -123,16 +123,16 @@ module.exports.remove = function (packages) {
   });
 };
 
-function parsePacmanQuery(package, output, returnObj, fulfill) {
-  var stdout = '';
+function parsePacmanQuery(packageName, output, returnObj, fulfill) {
+  let stdout = '';
   output.text.forEach((outputObject) => {
-    if (outputObject.type == 'stdout') {
+    if (outputObject.type === 'stdout') {
       stdout += outputObject.data;
     }
   });
   stdout = stdout.split('\n');
 
-  var packageData = {};
+  let packageData = {};
   stdout.forEach((line) => {
     if (line !== '') {
       if (line[0] !== ' ') {
@@ -140,7 +140,7 @@ function parsePacmanQuery(package, output, returnObj, fulfill) {
         packageData.repository = line.split('/')[0];
         packageData.packageName = line.split('/')[1].split(' ')[0];
         packageData.version = line.split('/')[1].split(' ')[1];
-        packageData.installed = line.split('[')[1] ? true : false;
+        packageData.installed = !!line.split('[')[1];
       } else {
         packageData.description = line.substr(4);
         returnObj.result.push(packageData);
@@ -151,10 +151,10 @@ function parsePacmanQuery(package, output, returnObj, fulfill) {
   fulfill(returnObj);
 }
 
-function parseDpkgQuery(package, output, returnObj, fulfill) {
-  var stdout = '';
+function parseDpkgQuery(packageName, output, returnObj, fulfill) {
+  let stdout = '';
   output.text.forEach((outputObject) => {
-    if (outputObject.type == 'stdout') {
+    if (outputObject.type === 'stdout') {
       stdout += outputObject.data;
     }
   });
@@ -179,10 +179,10 @@ const queriesParser = {
   dpkg: parseDpkgQuery,
 };
 
-function query(package, returnObj, fulfill) {
+function query(packageName, returnObj, fulfill) {
   if (queriesParser[pacapt.localInfos.packageManager] !== undefined) {
-    pacapt.Ss([package]).then((output) => {
-      queriesParser[pacapt.localInfos.packageManager](package, output, returnObj, fulfill);
+    pacapt.Ss([packageName]).then((output) => {
+      queriesParser[pacapt.localInfos.packageManager](packageName, output, returnObj, fulfill);
     }).catch((output) => {
       returnObj.status = 'failure';
       returnObj.error = output.error;
@@ -200,32 +200,32 @@ function query(package, returnObj, fulfill) {
 // Simulate of successful package query
 // -> query a list of available packages from a string
 //
-module.exports.query = function (package) {
-  return new Promise(function (fulfill, reject) {
+module.exports.query = function queryExported(packageName) {
+  return new Promise((fulfill) => {
     const returnObj = {
       status: 'success',
-      request: package,
+      request: packageName,
       result: [],
     };
 
     if (pacapt.localInfos.packageManager === 'undefined') {
       pacapt.init().then(() => {
-        query(package, returnObj, fulfill);
+        query(packageName, returnObj, fulfill);
       }).catch((error) => {
         returnObj.status = 'failure';
         returnObj.error = `error during pacapt initialization: ${error}`;
         fulfill(returnObj);
       });
     } else {
-      query(package, returnObj, fulfill);
+      query(packageName, returnObj, fulfill);
     }
   });
 };
 
 function parsePacmanList(output, returnObj, fulfill) {
-  var stdout = '';
+  let stdout = '';
   output.text.forEach((outputObject) => {
-    if (outputObject.type == 'stdout') {
+    if (outputObject.type === 'stdout') {
       stdout += outputObject.data;
     }
   });
@@ -247,9 +247,9 @@ function parsePacmanList(output, returnObj, fulfill) {
 }
 
 function parseDpkgList(output, returnObj, fulfill) {
-  var stdout = '';
+  let stdout = '';
   output.text.forEach((outputObject) => {
-    if (outputObject.type == 'stdout') {
+    if (outputObject.type === 'stdout') {
       stdout += outputObject.data;
     }
   });
@@ -312,8 +312,8 @@ function list(returnObj, fulfill) {
 // Simulate a successful list installed packages query
 // -> query a list of all installed packages
 //
-module.exports.list = function () {
-  return new Promise(function (fulfill, reject) {
+module.exports.list = function listExported() {
+  return new Promise((fulfill) => {
     const returnObj = {
       status: 'success',
       result: [],
