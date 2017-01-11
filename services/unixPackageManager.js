@@ -25,19 +25,17 @@ function install(packages, i, returnObj, fulfill) {
   });
 }
 
-module.exports.install = function installExported(packages) {
-  return new Promise((fulfill) => {
-    const returnObj = {
-      status: 'success',
-      request: packages,
-      result: [],
-    };
+module.exports.install = packages => new Promise((fulfill) => {
+  const returnObj = {
+    status: 'success',
+    request: packages,
+    result: [],
+  };
 
-    semaphore.take(() => {
-      install(packages, 0, returnObj, fulfill, semaphore);
-    });
+  semaphore.take(() => {
+    install(packages, 0, returnObj, fulfill, semaphore);
   });
-};
+});
 
 function update(packages, i, returnObj, fulfill) {
   const packageName = packages[i];
@@ -63,27 +61,25 @@ function update(packages, i, returnObj, fulfill) {
   });
 }
 
-module.exports.update = function updateExported(packages) {
-  return new Promise((fulfill) => {
-    const returnObj = {
-      status: 'success',
-      request: packages,
-      result: [],
-    };
+module.exports.update = packages => new Promise((fulfill) => {
+  const returnObj = {
+    status: 'success',
+    request: packages,
+    result: [],
+  };
 
-    semaphore.take(() => {
-      pacapt.updateDatabase().then(() => {
-        update(packages, 0, returnObj, fulfill, semaphore);
-      })
+  semaphore.take(() => {
+    pacapt.updateDatabase().then(() => {
+      update(packages, 0, returnObj, fulfill, semaphore);
+    })
       .catch((output) => {
         returnObj.status = 'failure';
         returnObj.error = output.error;
         semaphore.leave();
         fulfill(returnObj);
       });
-    });
   });
-};
+});
 
 function remove(packages, i, returnObj, fulfill) {
   const packageName = packages[i];
@@ -109,19 +105,17 @@ function remove(packages, i, returnObj, fulfill) {
   });
 }
 
-module.exports.remove = function removeExported(packages) {
-  return new Promise((fulfill) => {
-    const returnObj = {
-      status: 'success',
-      request: packages,
-      result: [],
-    };
+module.exports.remove = packages => new Promise((fulfill) => {
+  const returnObj = {
+    status: 'success',
+    request: packages,
+    result: [],
+  };
 
-    semaphore.take(() => {
-      remove(packages, 0, returnObj, fulfill, semaphore);
-    });
+  semaphore.take(() => {
+    remove(packages, 0, returnObj, fulfill, semaphore);
   });
-};
+});
 
 function parsePacmanQuery(packageName, output, returnObj, fulfill) {
   let stdout = '';
@@ -200,27 +194,25 @@ function query(packageName, returnObj, fulfill) {
 // Simulate of successful package query
 // -> query a list of available packages from a string
 //
-module.exports.query = function queryExported(packageName) {
-  return new Promise((fulfill) => {
-    const returnObj = {
-      status: 'success',
-      request: packageName,
-      result: [],
-    };
+module.exports.query = packageName => new Promise((fulfill) => {
+  const returnObj = {
+    status: 'success',
+    request: packageName,
+    result: [],
+  };
 
-    if (pacapt.localInfos.packageManager === 'undefined') {
-      pacapt.init().then(() => {
-        query(packageName, returnObj, fulfill);
-      }).catch((error) => {
-        returnObj.status = 'failure';
-        returnObj.error = `error during pacapt initialization: ${error}`;
-        fulfill(returnObj);
-      });
-    } else {
+  if (pacapt.localInfos.packageManager === 'undefined') {
+    pacapt.init().then(() => {
       query(packageName, returnObj, fulfill);
-    }
-  });
-};
+    }).catch((error) => {
+      returnObj.status = 'failure';
+      returnObj.error = `error during pacapt initialization: ${error}`;
+      fulfill(returnObj);
+    });
+  } else {
+    query(packageName, returnObj, fulfill);
+  }
+});
 
 function parsePacmanList(output, returnObj, fulfill) {
   let stdout = '';
@@ -312,23 +304,21 @@ function list(returnObj, fulfill) {
 // Simulate a successful list installed packages query
 // -> query a list of all installed packages
 //
-module.exports.list = function listExported() {
-  return new Promise((fulfill) => {
-    const returnObj = {
-      status: 'success',
-      result: [],
-    };
+module.exports.list = () => new Promise((fulfill) => {
+  const returnObj = {
+    status: 'success',
+    result: [],
+  };
 
-    if (pacapt.localInfos.packageManager === 'undefined') {
-      pacapt.init().then(() => {
-        list(returnObj, fulfill);
-      }).catch((error) => {
-        returnObj.status = 'failure';
-        returnObj.error = `error during pacapt initialization: ${error}`;
-        fulfill(returnObj);
-      });
-    } else {
+  if (pacapt.localInfos.packageManager === 'undefined') {
+    pacapt.init().then(() => {
       list(returnObj, fulfill);
-    }
-  });
-};
+    }).catch((error) => {
+      returnObj.status = 'failure';
+      returnObj.error = `error during pacapt initialization: ${error}`;
+      fulfill(returnObj);
+    });
+  } else {
+    list(returnObj, fulfill);
+  }
+});

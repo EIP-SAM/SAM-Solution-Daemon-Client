@@ -7,6 +7,7 @@
   "scripts": {
     "start": "node client.js",
     "lint": "node_modules/.bin/eslint .",
+    "lint:fix": "node_modules/.bin/eslint . --fix",
     "test": "echo \"Error: no test specified\""
   },
   "repository": {
