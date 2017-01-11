@@ -36,7 +36,7 @@ $ git checkout develop
 
 #### Install project `npm` dependencies
 ```
-$ npm install
+$ npm install --prod
 ```
 
 #### Configure the client

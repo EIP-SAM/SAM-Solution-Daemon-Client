@@ -1,7 +1,7 @@
 const pacapt = require('node-pacapt');
 const semaphore = require('semaphore')(1);
 
-function install(packages, i, returnObj, fulfill, semaphore) {
+function install(packages, i, returnObj, fulfill) {
   const packageName = packages[i];
 
   console.log('package', packageName);
@@ -39,7 +39,7 @@ module.exports.install = function installExported(packages) {
   });
 };
 
-function update(packages, i, returnObj, fulfill, semaphore) {
+function update(packages, i, returnObj, fulfill) {
   const packageName = packages[i];
 
   console.log('package', packageName);
@@ -85,7 +85,7 @@ module.exports.update = function updateExported(packages) {
   });
 };
 
-function remove(packages, i, returnObj, fulfill, semaphore) {
+function remove(packages, i, returnObj, fulfill) {
   const packageName = packages[i];
 
   console.log('package', packageName);
