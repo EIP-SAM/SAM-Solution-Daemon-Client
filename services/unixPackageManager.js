@@ -158,8 +158,8 @@ function parseDpkgQuery(packageName, output, returnObj, fulfill) {
     if (line !== '') {
       const packageData = {};
 
-      packageData.name = line.split(' ')[0];
-      packageData.description = line.substr(packageData.name.length + 3);
+      packageData.packageName = line.split(' ')[0];
+      packageData.description = line.substr(packageData.packageName.length + 3);
       packageData.installed = false;
       returnObj.result.push(packageData);
     }
