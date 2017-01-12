@@ -4,9 +4,9 @@ const path = require('path');
 
 // Create a new service object
 const svc = new Service({
-  name:'SAM Solution Daemon Client',
+  name: 'SAM Solution Daemon Client',
   description: 'System Administration Manager Solution: Localhost controller',
-  script: path.resolve(__dirname + '/../client.js')
+  script: path.resolve(__dirname, '../client.js'),
 });
 
 svc.on('install', () => {
