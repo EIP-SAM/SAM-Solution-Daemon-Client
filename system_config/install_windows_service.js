@@ -1,5 +1,6 @@
-
+/* eslint-disable */
 const Service = require('node-windows').Service;
+/* eslint-enable */
 const path = require('path');
 
 // Create a new service object
