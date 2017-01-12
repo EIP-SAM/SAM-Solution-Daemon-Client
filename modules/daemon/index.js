@@ -4,5 +4,5 @@ module.exports = (socket) => {
   /*
     GetUserData : Send user's data
    */
-   onGetUserData(socket);
-}
+  onGetUserData(socket);
+};

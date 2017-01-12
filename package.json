@@ -6,7 +6,9 @@
   "main": "client.js",
   "scripts": {
     "start": "node client.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "node_modules/.bin/eslint .",
+    "lint:fix": "node_modules/.bin/eslint . --fix",
+    "test": "echo \"Error: no test specified\""
   },
   "repository": {
     "type": "git",
@@ -45,5 +47,12 @@
     "os-reboot": "github:eip-sam/OS-Reboot",
     "semaphore": "^1.0.5",
     "socket.io-client": "^1.4.6"
+  },
+  "devDependencies": {
+    "eslint": "^3.13.1",
+    "eslint-config-airbnb": "^14.0.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^3.0.2",
+    "eslint-plugin-react": "^6.9.0"
   }
 }

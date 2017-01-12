@@ -1,10 +1,8 @@
-const os = require('os');
-
 //
 // Simulate a successful software packages install
 //
-module.exports.install = function (packages) {
-  return new Promise(function (fulfill, reject) {
+module.exports.install = function install(packages) {
+  return new Promise((fulfill) => {
     fulfill({
       status: 'success',
       request: packages,
@@ -20,8 +18,8 @@ module.exports.install = function (packages) {
 //
 // Simulate a successful software packages update
 //
-module.exports.update = function (packages) {
-  return new Promise(function (fulfill, reject) {
+module.exports.update = function update(packages) {
+  return new Promise((fulfill) => {
     fulfill({
       status: 'success',
       request: packages,
@@ -37,8 +35,8 @@ module.exports.update = function (packages) {
 //
 // Simulate a fatal error during software packages remove
 //
-module.exports.remove = function (packages) {
-  return new Promise(function (fulfill, reject) {
+module.exports.remove = function remove(packages) {
+  return new Promise((fulfill) => {
     fulfill({
       status: 'failure',
       request: packages,
@@ -51,15 +49,15 @@ module.exports.remove = function (packages) {
 //
 // Simulate of successful package query
 //
-module.exports.query = function (package) {
-  return new Promise(function (fulfill, reject) {
+module.exports.query = function query(packageName) {
+  return new Promise((fulfill) => {
     fulfill({
       status: 'success',
-      request: package,
+      request: packageName,
       result: [
-        { packageName: package, description: 'A super `' + package + '` description', installed: true },
-        { packageName: package + '-foo', description: 'A super `' + package + '-foo` description', installed: false },
-        { packageName: package + '-baz', description: 'A super `' + package + '-baz` description', installed: true },
+        { packageName, description: `A super ${packageName} description`, installed: true },
+        { packageName: `${packageName}-foo`, description: `A super ${packageName}-foo description`, installed: false },
+        { packageName: `${packageName}-baz`, description: `A super ${packageName}-baz description`, installed: true },
       ],
     });
   });
@@ -68,8 +66,8 @@ module.exports.query = function (package) {
 //
 // Simulate a successful list installed packages query
 //
-module.exports.list = function () {
-  return new Promise(function (fulfill, reject) {
+module.exports.list = function list() {
+  return new Promise((fulfill) => {
     fulfill({
       status: 'success',
       result: [

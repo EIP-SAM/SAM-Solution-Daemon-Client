@@ -4,5 +4,5 @@ module.exports = (socket) => {
   /*
     exec : exec a restore
    */
-   onExec(socket);
-}
+  onExec(socket);
+};

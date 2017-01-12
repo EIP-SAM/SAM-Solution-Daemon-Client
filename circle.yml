@@ -1,0 +1,12 @@
+## Customize machine
+machine:
+  node:
+    version: 6.1.0
+
+## Customize test commands
+test:
+  pre:
+    - for f in *config.json.example; do cp "$f" "`echo $f | sed s/json.example/json/`"; done:
+        pwd:
+          config/
+    - npm run lint

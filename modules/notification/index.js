@@ -4,5 +4,5 @@ module.exports = (socket) => {
   /*
     displayNotification :  Display notification
    */
-   displayNotification(socket);
-}
+  displayNotification(socket);
+};
