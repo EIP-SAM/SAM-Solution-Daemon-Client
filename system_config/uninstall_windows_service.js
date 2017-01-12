@@ -1,10 +1,12 @@
+
 const Service = require('node-windows').Service;
+const path = require('path');
 
 // Create a new service object
 const svc = new Service({
   name:'SAM Solution Daemon Client',
   description: 'System Administration Manager Solution: Localhost controller',
-  script: path.resolve(__diranme + '../client.js')
+  script: path.resolve(__dirname + '/../client.js')
 });
 
 svc.on('install', () => {
