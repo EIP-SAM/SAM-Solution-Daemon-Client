@@ -238,10 +238,6 @@ function query(packageName, returnObj, fulfill) {
   }
 }
 
-//
-// Simulate of successful package query
-// -> query a list of available packages from a string
-//
 module.exports.query = packageName => new Promise((fulfill) => {
   const returnObj = {
     status: 'success',
@@ -383,10 +379,6 @@ function list(returnObj, fulfill) {
   }
 }
 
-//
-// Simulate a successful list installed packages query
-// -> query a list of all installed packages
-//
 module.exports.list = () => new Promise((fulfill) => {
   const returnObj = {
     status: 'success',
