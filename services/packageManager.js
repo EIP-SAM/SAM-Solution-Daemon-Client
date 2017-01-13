@@ -314,8 +314,27 @@ function parseDpkgList(output, returnObj, fulfill) {
 }
 
 function parseChocolateyList(output, returnObj, fulfill) {
-  console.log('function parseChocolateyList()');
-  console.log(output);
+  let stdout = '';
+  output.text.forEach((outputObject) => {
+    if (outputObject.type === 'stdout') {
+      stdout += outputObject.data;
+    }
+  });
+  stdout = stdout.split(os.EOL);
+
+  stdout.splice(0, 1); // remove first line
+  stdout.splice(stdout.length - 2, 2); // remove last two lines
+
+  stdout.forEach((line) => {
+    const packageData = {};
+
+    packageData.packageName = line.split(' ')[0];
+    packageData.version = line.split(' ')[1];
+    packageData.installed = true;
+    packageData.description = 'not available';
+    returnObj.result.push(packageData);
+  });
+
   semaphore.leave();
   fulfill(returnObj);
 }
