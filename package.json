@@ -6,6 +6,7 @@
   "main": "client.js",
   "scripts": {
     "start": "node client.js",
+    "install": "npm update node-pacapt git-wrapper",
     "lint": "node_modules/.bin/eslint .",
     "lint:fix": "node_modules/.bin/eslint . --fix",
     "test": "echo \"Error: no test specified\""
