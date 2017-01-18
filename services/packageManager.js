@@ -262,6 +262,36 @@ module.exports.query = packageName => new Promise((fulfill) => {
   }
 });
 
+function parsePacmanQueryPackagesInfo(output, returnObj) {
+  let stdout = '';
+  output.text.forEach((outputObject) => {
+    if (outputObject.type === 'stdout') {
+      stdout += outputObject.data;
+    }
+  });
+  stdout = stdout.split(os.EOL);
+
+  for (let i = 0; i !== stdout.length; i += 1) {
+    const line = stdout[i];
+    if (line.split(' ')[0] === 'Name') {
+      for (let j = 0; j !== returnObj.result.length; j += 1) {
+        const packageData = returnObj.result[j];
+        if (packageData.packageName === line.split(':')[1].substr(1)) {
+          let descriptionLine = stdout[i];
+          while (descriptionLine.split(' ')[0] !== 'Description' && descriptionLine.split(' ')[0] !== '') {
+            i += 1;
+            descriptionLine = stdout[i];
+          }
+          if (descriptionLine.split(' ')[0] === 'Description') {
+            packageData.description = descriptionLine.split(':')[1].substr(1);
+          }
+          break;
+        }
+      }
+    }
+  }
+}
+
 function parsePacmanList(output, returnObj, fulfill) {
   let stdout = '';
   output.text.forEach((outputObject) => {
@@ -269,7 +299,7 @@ function parsePacmanList(output, returnObj, fulfill) {
       stdout += outputObject.data;
     }
   });
-  stdout = stdout.split('\n');
+  stdout = stdout.split(os.EOL);
 
   stdout.forEach((line) => {
     if (line !== '') {
@@ -278,13 +308,25 @@ function parsePacmanList(output, returnObj, fulfill) {
       packageData.packageName = line.split(' ')[0];
       packageData.version = line.split(' ')[1];
       packageData.installed = true;
-      packageData.description = 'not available';
+      packageData.description = 'Not available';
       returnObj.result.push(packageData);
     }
   });
 
-  semaphore.leave();
-  fulfill(returnObj);
+  const listedPackages = [];
+  returnObj.result.forEach((packageData) => {
+    listedPackages.push(packageData.packageName);
+  });
+
+  pacapt.Si(listedPackages).then((output_) => {
+    parsePacmanQueryPackagesInfo(output_, returnObj);
+    semaphore.leave();
+    fulfill(returnObj);
+  }).catch((output_) => {
+    parsePacmanQueryPackagesInfo(output_, returnObj);
+    semaphore.leave();
+    fulfill(returnObj);
+  });
 }
 
 function parseDpkgList(output, returnObj, fulfill) {
