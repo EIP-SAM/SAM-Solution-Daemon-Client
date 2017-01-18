@@ -336,29 +336,36 @@ function parseDpkgList(output, returnObj, fulfill) {
       stdout += outputObject.data;
     }
   });
-  stdout = stdout.split('\n');
+  stdout = stdout.split(os.EOL);
 
   stdout.forEach((line) => {
     if (line !== '') {
       const packageData = {};
+      let lastIndex = 0;
 
       packageData.packageName = line.substr(4).split(' ')[0];
+      lastIndex = 4 + packageData.packageName.length;
 
-      packageData.version = line.substr(line.indexOf(packageData.packageName) + packageData.packageName.length);
+      packageData.version = line.substr(lastIndex);
       while (packageData.version.indexOf(' ') === 0) {
         packageData.version = packageData.version.substr(1);
+        lastIndex += 1;
       }
       packageData.version = packageData.version.substr(0, packageData.version.indexOf(' '));
+      lastIndex += packageData.version.length;
 
-      packageData.architecture = line.substr(line.indexOf(packageData.version) + packageData.version.length);
+      packageData.architecture = line.substr(lastIndex);
       while (packageData.architecture.indexOf(' ') === 0) {
         packageData.architecture = packageData.architecture.substr(1);
+        lastIndex += 1;
       }
       packageData.architecture = packageData.architecture.substr(0, packageData.architecture.indexOf(' '));
+      lastIndex += packageData.architecture.length;
 
-      packageData.description = line.substr(line.indexOf(packageData.architecture) + packageData.architecture.length);
+      packageData.description = line.substr(lastIndex);
       while (packageData.description.indexOf(' ') === 0) {
         packageData.description = packageData.description.substr(1);
+        lastIndex += 1;
       }
 
       packageData.installed = true;
