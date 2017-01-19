@@ -250,7 +250,16 @@ function parseChocolateyQuery(packageName, output, returnObj, fulfill) {
   stdout = stdout.split(os.EOL);
 
   stdout.splice(0, 1); // remove first line
-  stdout.splice(stdout.length - 2, 2); // remove last two lines
+
+  let endLine = 0;
+  stdout.some((line) => {
+    if (line.split(' ')[1] === 'packages' && line.split(' ')[2] === 'found.') {
+      return true;
+    }
+    endLine += 1;
+    return false;
+  });
+  stdout.splice(endLine, stdout.length - endLine); // remove last lines
 
   stdout.forEach((line) => {
     const packageData = {};
@@ -446,7 +455,16 @@ function parseChocolateyList(output, returnObj, fulfill) {
   stdout = stdout.split(os.EOL);
 
   stdout.splice(0, 1); // remove first line
-  stdout.splice(stdout.length - 2, 2); // remove last two lines
+
+  let endLine = 0;
+  stdout.some((line) => {
+    if (line.split(' ')[1] === 'packages' && line.split(' ')[2] === 'installed.') {
+      return true;
+    }
+    endLine += 1;
+    return false;
+  });
+  stdout.splice(endLine, stdout.length - endLine); // remove last lines
 
   stdout.forEach((line) => {
     const packageData = {};
