@@ -163,6 +163,29 @@ function parsePacmanQuery(packageName, output, returnObj, fulfill) {
   fulfill(returnObj);
 }
 
+function dpkgCrossReferenceInstallPackages(output, returnObj) {
+  let stdout = '';
+  output.text.forEach((outputObject) => {
+    if (outputObject.type === 'stdout') {
+      stdout += outputObject.data;
+    }
+  });
+  stdout = stdout.split(os.EOL);
+
+  stdout.forEach((line) => {
+    if (line !== '') {
+      const packageName = line.substr(4).split(' ')[0];
+      for (let i = 0; i !== returnObj.result.length; i += 1) {
+        const packageData = returnObj.result[i];
+        if (packageData.packageName === packageName) {
+          packageData.installed = true;
+          break;
+        }
+      }
+    }
+  });
+}
+
 function parseDpkgQuery(packageName, output, returnObj, fulfill) {
   let stdout = '';
   output.text.forEach((outputObject) => {
@@ -183,8 +206,38 @@ function parseDpkgQuery(packageName, output, returnObj, fulfill) {
     }
   });
 
-  semaphore.leave();
-  fulfill(returnObj);
+  pacapt.Q().then((output_) => {
+    dpkgCrossReferenceInstallPackages(output_, returnObj);
+    semaphore.leave();
+    fulfill(returnObj);
+  }).catch(() => {
+    semaphore.leave();
+    fulfill(returnObj);
+  });
+}
+
+function chocolateyCrossReferenceInstallPackages(output, returnObj) {
+  let stdout = '';
+  output.text.forEach((outputObject) => {
+    if (outputObject.type === 'stdout') {
+      stdout += outputObject.data;
+    }
+  });
+  stdout = stdout.split(os.EOL);
+
+  stdout.splice(0, 1); // remove first line
+  stdout.splice(stdout.length - 2, 2); // remove last two lines
+
+  stdout.forEach((line) => {
+    const packageName = line.split(' ')[0];
+    for (let i = 0; i !== returnObj.result.length; i += 1) {
+      const packageData = returnObj.result[i];
+      if (packageData.packageName === packageName) {
+        packageData.installed = true;
+        break;
+      }
+    }
+  });
 }
 
 function parseChocolateyQuery(packageName, output, returnObj, fulfill) {
@@ -209,8 +262,14 @@ function parseChocolateyQuery(packageName, output, returnObj, fulfill) {
     returnObj.result.push(packageData);
   });
 
-  semaphore.leave();
-  fulfill(returnObj);
+  pacapt.Q().then((output_) => {
+    chocolateyCrossReferenceInstallPackages(output_, returnObj);
+    semaphore.leave();
+    fulfill(returnObj);
+  }).catch(() => {
+    semaphore.leave();
+    fulfill(returnObj);
+  });
 }
 
 const queriesParser = {
@@ -262,6 +321,36 @@ module.exports.query = packageName => new Promise((fulfill) => {
   }
 });
 
+function parsePacmanQueryPackagesInfo(output, returnObj) {
+  let stdout = '';
+  output.text.forEach((outputObject) => {
+    if (outputObject.type === 'stdout') {
+      stdout += outputObject.data;
+    }
+  });
+  stdout = stdout.split(os.EOL);
+
+  for (let i = 0; i !== stdout.length; i += 1) {
+    const line = stdout[i];
+    if (line.split(' ')[0] === 'Name') {
+      for (let j = 0; j !== returnObj.result.length; j += 1) {
+        const packageData = returnObj.result[j];
+        if (packageData.packageName === line.split(':')[1].substr(1)) {
+          let descriptionLine = stdout[i];
+          while (descriptionLine.split(' ')[0] !== 'Description' && descriptionLine.split(' ')[0] !== '') {
+            i += 1;
+            descriptionLine = stdout[i];
+          }
+          if (descriptionLine.split(' ')[0] === 'Description') {
+            packageData.description = descriptionLine.split(':')[1].substr(1);
+          }
+          break;
+        }
+      }
+    }
+  }
+}
+
 function parsePacmanList(output, returnObj, fulfill) {
   let stdout = '';
   output.text.forEach((outputObject) => {
@@ -269,7 +358,7 @@ function parsePacmanList(output, returnObj, fulfill) {
       stdout += outputObject.data;
     }
   });
-  stdout = stdout.split('\n');
+  stdout = stdout.split(os.EOL);
 
   stdout.forEach((line) => {
     if (line !== '') {
@@ -278,13 +367,25 @@ function parsePacmanList(output, returnObj, fulfill) {
       packageData.packageName = line.split(' ')[0];
       packageData.version = line.split(' ')[1];
       packageData.installed = true;
-      packageData.description = 'not available';
+      packageData.description = 'Not available';
       returnObj.result.push(packageData);
     }
   });
 
-  semaphore.leave();
-  fulfill(returnObj);
+  const listedPackages = [];
+  returnObj.result.forEach((packageData) => {
+    listedPackages.push(packageData.packageName);
+  });
+
+  pacapt.Si(listedPackages).then((output_) => {
+    parsePacmanQueryPackagesInfo(output_, returnObj);
+    semaphore.leave();
+    fulfill(returnObj);
+  }).catch((output_) => {
+    parsePacmanQueryPackagesInfo(output_, returnObj);
+    semaphore.leave();
+    fulfill(returnObj);
+  });
 }
 
 function parseDpkgList(output, returnObj, fulfill) {
@@ -294,29 +395,36 @@ function parseDpkgList(output, returnObj, fulfill) {
       stdout += outputObject.data;
     }
   });
-  stdout = stdout.split('\n');
+  stdout = stdout.split(os.EOL);
 
   stdout.forEach((line) => {
     if (line !== '') {
       const packageData = {};
+      let lastIndex = 0;
 
       packageData.packageName = line.substr(4).split(' ')[0];
+      lastIndex = 4 + packageData.packageName.length;
 
-      packageData.version = line.substr(line.indexOf(packageData.packageName) + packageData.packageName.length);
+      packageData.version = line.substr(lastIndex);
       while (packageData.version.indexOf(' ') === 0) {
         packageData.version = packageData.version.substr(1);
+        lastIndex += 1;
       }
       packageData.version = packageData.version.substr(0, packageData.version.indexOf(' '));
+      lastIndex += packageData.version.length;
 
-      packageData.architecture = line.substr(line.indexOf(packageData.version) + packageData.version.length);
+      packageData.architecture = line.substr(lastIndex);
       while (packageData.architecture.indexOf(' ') === 0) {
         packageData.architecture = packageData.architecture.substr(1);
+        lastIndex += 1;
       }
       packageData.architecture = packageData.architecture.substr(0, packageData.architecture.indexOf(' '));
+      lastIndex += packageData.architecture.length;
 
-      packageData.description = line.substr(line.indexOf(packageData.architecture) + packageData.architecture.length);
+      packageData.description = line.substr(lastIndex);
       while (packageData.description.indexOf(' ') === 0) {
         packageData.description = packageData.description.substr(1);
+        lastIndex += 1;
       }
 
       packageData.installed = true;
