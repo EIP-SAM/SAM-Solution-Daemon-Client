@@ -216,6 +216,30 @@ function parseDpkgQuery(packageName, output, returnObj, fulfill) {
   });
 }
 
+function chocolateyCrossReferenceInstallPackages(output, returnObj) {
+  let stdout = '';
+  output.text.forEach((outputObject) => {
+    if (outputObject.type === 'stdout') {
+      stdout += outputObject.data;
+    }
+  });
+  stdout = stdout.split(os.EOL);
+
+  stdout.splice(0, 1); // remove first line
+  stdout.splice(stdout.length - 2, 2); // remove last two lines
+
+  stdout.forEach((line) => {
+    const packageName = line.split(' ')[0];
+    for (let i = 0; i !== returnObj.result.length; i += 1) {
+      const packageData = returnObj.result[i];
+      if (packageData.packageName === packageName) {
+        packageData.installed = true;
+        break;
+      }
+    }
+  });
+}
+
 function parseChocolateyQuery(packageName, output, returnObj, fulfill) {
   let stdout = '';
   output.text.forEach((outputObject) => {
@@ -238,8 +262,14 @@ function parseChocolateyQuery(packageName, output, returnObj, fulfill) {
     returnObj.result.push(packageData);
   });
 
-  semaphore.leave();
-  fulfill(returnObj);
+  pacapt.Q().then((output_) => {
+    chocolateyCrossReferenceInstallPackages(output_, returnObj);
+    semaphore.leave();
+    fulfill(returnObj);
+  }).catch(() => {
+    semaphore.leave();
+    fulfill(returnObj);
+  });
 }
 
 const queriesParser = {
