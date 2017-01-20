@@ -42,10 +42,10 @@
   },
   "dependencies": {
     "getmac": "^1.2.1",
-    "git-wrapper": "github:eip-sam/node-git-wrapper",
+    "git-wrapper": "git+https://github.com/EIP-SAM/node-git-wrapper.git",
     "node-notifier": "^4.6.1",
     "node-pacapt": "git+https://github.com/EIP-SAM/node-pacapt.git",
-    "os-reboot": "github:eip-sam/OS-Reboot",
+    "os-reboot": "git+https://github.com/EIP-SAM/OS-Reboot.git",
     "requireg": "^0.1.6",
     "semaphore": "^1.0.5",
     "socket.io-client": "^1.4.6"
