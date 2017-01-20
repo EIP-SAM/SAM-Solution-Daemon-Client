@@ -12,7 +12,7 @@ module.exports = (socket) => {
       socket.emit('daemon_save_Exec', { isStart: true, isFinish: true, isSuccess: true, files: data.files, branch: data.branch });
     }).catch((err) => {
       console.log(err);
-      socket.emit('daemon_save_Exec', { isStart: true, isFinish: true, isSuccess: false, files: msg.files, err: `${err}`});
+      socket.emit('daemon_save_Exec', { isStart: true, isFinish: true, isSuccess: false, files: msg.files, err: `${err}` });
     });
   });
 };
